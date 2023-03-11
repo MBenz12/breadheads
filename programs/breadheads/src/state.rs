@@ -11,6 +11,7 @@ pub const DECIMALS: u32 = 100;
 pub struct Vault {
     pub authority: Pubkey,
     pub nft_items: [NftItem; TOTAL_COLLECTION],
+    pub nft_creator: Pubkey,
     pub item_count: usize,
     pub staked_count: u32,
     pub xp_rate: u32,
@@ -24,6 +25,7 @@ impl Default for Vault {
         Vault {
             authority: Pubkey::default(),
             nft_items: [NftItem::default(); TOTAL_COLLECTION],
+            nft_creator: Pubkey::default(),
             item_count: 0,
             staked_count: 0,
             xp_rate: 5 * DECIMALS,
@@ -153,4 +155,12 @@ impl User {
             self.staked_items.remove(index);
         }
     }
+}
+
+#[error_code]
+pub enum CustomError {
+    #[msg("Wrong NFT Creator")]
+    WrongNFTCreator,
+    #[msg("Unauthorized access")]
+    Unauthorized,
 }
