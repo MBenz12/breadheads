@@ -11,6 +11,7 @@ pub const DECIMALS: u32 = 100;
 pub struct Vault {
     pub authority: Pubkey,
     pub nft_items: [NftItem; TOTAL_COLLECTION],
+    pub nft_creator: Pubkey,
     pub item_count: usize,
     pub staked_count: u32,
     pub xp_rate: u32,
@@ -24,6 +25,7 @@ impl Default for Vault {
         Vault {
             authority: Pubkey::default(),
             nft_items: [NftItem::default(); TOTAL_COLLECTION],
+            nft_creator: Pubkey::default(),
             item_count: 0,
             staked_count: 0,
             xp_rate: 5 * DECIMALS,
@@ -35,7 +37,7 @@ impl Default for Vault {
 }
 
 impl Vault {
-    fn stake(&mut self, mint: Pubkey, name: u32) -> usize {
+    pub fn stake(&mut self, mint: Pubkey, name: u32) -> usize {
         let now: u64 = now();
         for i in 0..self.item_count {
             if self.nft_items[i].mint == mint {
@@ -105,7 +107,7 @@ pub struct User {
 impl User {
     pub const LEN: usize = std::mem::size_of::<User>();
 
-    fn init(&mut self, key: Pubkey, bump: u8) {
+    pub fn init(&mut self, key: Pubkey, bump: u8) {
         self.key = key;
         self.bump = bump;
         self.last_updated_time = 0;
@@ -113,7 +115,7 @@ impl User {
         self.earned_xp = 0;
     }
 
-    fn update(&mut self, vault: &RefMut<Vault>) {
+    pub fn update(&mut self, vault: &RefMut<Vault>) {
         let now: u64 = now();
         if self.last_updated_time > 0 {
             let staked_count = self.staked_items.len();
@@ -138,7 +140,7 @@ impl User {
         self.last_updated_time = now;
     }
 
-    fn stake(&mut self, vault: &RefMut<Vault>, index: usize) {
+    pub fn stake(&mut self, vault: &RefMut<Vault>, index: usize) {
         self.update(vault);
 
         if self.staked_items.iter().any(|x| x == &index) == false {
@@ -146,11 +148,19 @@ impl User {
         }
     }
 
-    fn unstake(&mut self, vault: &RefMut<Vault>, index: usize) {
+    pub fn unstake(&mut self, vault: &RefMut<Vault>, index: usize) {
         self.update(vault);
 
         if self.staked_items.iter().any(|x| x == &index) {
             self.staked_items.remove(index);
         }
     }
+}
+
+#[error_code]
+pub enum CustomError {
+    #[msg("Wrong NFT Creator")]
+    WrongNFTCreator,
+    #[msg("Unauthorized access")]
+    Unauthorized,
 }
