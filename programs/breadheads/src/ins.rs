@@ -130,6 +130,7 @@ pub struct Unstake<'info> {
 
     /// CHECK:
     #[account(
+        mut,
         seeds = [
             b"vault".as_ref(),
             vault.key().as_ref(),

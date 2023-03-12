@@ -10,7 +10,7 @@ use spl_token_metadata::state::Metadata;
 use crate::ins::*;
 use crate::state::CustomError;
 
-declare_id!("3i8fQhK9ZeTUPi83JpgShcAJ9M6UHJL8MCqGujr4czSW");
+declare_id!("GoN9gXY2UxvwgV9wf64SVzhVXrNfghqAhXPUpnvfYbap");
 
 #[program]
 pub mod breadheads {
