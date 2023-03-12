@@ -14,7 +14,7 @@ pub struct InitializeVault<'info> {
 
     /// CHECK:
     #[account(
-        init,
+        init_if_needed,
         payer = authority,
         seeds = [
             b"vault".as_ref(),

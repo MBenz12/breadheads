@@ -192,7 +192,7 @@ export async function callUnstakeAll(
     const signedTxns = await wallet.signAllTransactions(txns);
     const txSignatures = [];
     for (const signedTxn of signedTxns) {
-      const txSignature = await program.provider.connection.sendRawTransaction(signedTxn.serialize());
+      const txSignature = await program.provider.connection.sendRawTransaction(signedTxn.serialize(), { skipPreflight: true });
       txSignatures.push(txSignature);
     }
     for (const txSignature of txSignatures) {

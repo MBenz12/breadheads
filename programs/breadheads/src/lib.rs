@@ -14,8 +14,6 @@ declare_id!("GoN9gXY2UxvwgV9wf64SVzhVXrNfghqAhXPUpnvfYbap");
 
 #[program]
 pub mod breadheads {
-    use crate::state::Vault;
-
     use super::*;
 
     pub fn initialize_vault(
@@ -24,11 +22,11 @@ pub mod breadheads {
         bump: u8,
     ) -> Result<()> {
         let vault = &mut ctx.accounts.vault.load_init()?;
-        vault.authority = ctx.accounts.authority.key();
-        vault.bump = bump;
-        vault.nft_creator = nft_creator;
-
-        msg!("{:?}", std::mem::size_of::<Vault>());
+        vault.init(
+            ctx.accounts.authority.key(), 
+            nft_creator,
+            bump,
+        );
 
         Ok(())
     }

@@ -6,8 +6,18 @@ export const TotalEarnedXP = ({ vault, user }: { vault: VaultData, user: User })
 
     useEffect(() => {
         const intervalId = setInterval(() => {
-            let earned = 0;
+            if (user.lastUpdatedTime.toNumber() === 0) return;
             
+            let earned = user.earnedXp;
+            let stakedTime = Math.floor(new Date().getTime() / 1000) - user.lastUpdatedTime.toNumber();
+            let stakedCount = user.stakedItems.length;
+            let multiplier = 100;
+            for (let i = 0; i < vault.badgeCounts.length; i++) {
+                if (vault.badgeCounts[i] <= stakedCount && i) {
+                    multiplier = vault.multipliers[i] / 256;
+                }
+            }
+            earned = earned + stakedCount * multiplier / 100 * stakedTime / 86400 * vault.xpRate;
             setEarned(earned / 1e2);
         }, 1000);
         return () => clearInterval(intervalId);
