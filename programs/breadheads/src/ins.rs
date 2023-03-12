@@ -12,14 +12,20 @@ pub struct InitializeVault<'info> {
     #[account(zero)]
     pub vault: AccountLoader<'info, Vault>,
 
+    /// CHECK:
     #[account(
+        init,
+        payer = authority,
         seeds = [
             b"vault".as_ref(),
             vault.key().as_ref(),
         ],
         bump,
+        space = 0,
     )]
-    pub token_vault: SystemAccount<'info>,
+    pub token_vault: AccountInfo<'info>,
+
+    pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
@@ -38,9 +44,9 @@ pub struct CreateUser<'info> {
         bump,
         space = User::LEN + 8,
     )]
-    pub user: Account<'info, User>,
+    pub user: Box<Account<'info, User>>,
 
-    pub vault: SystemAccount<'info>,
+    pub vault: AccountLoader<'info, Vault>,
 
     pub system_program: Program<'info, System>,
 }
@@ -62,18 +68,20 @@ pub struct Stake<'info> {
         ],
         bump = user.bump
     )]
-    pub user: Account<'info, User>,
+    pub user: Box<Account<'info, User>>,
 
+    /// CHECK:
     #[account(
+        mut,
         seeds = [
             b"vault".as_ref(),
             vault.key().as_ref(),
         ],
         bump = vault.load()?.bump,
     )]
-    pub token_vault: SystemAccount<'info>,
+    pub token_vault: AccountInfo<'info>,
 
-    pub token_mint: Account<'info, Mint>,
+    pub token_mint: Box<Account<'info, Mint>>,
 
     #[account(
         mut,
@@ -82,11 +90,14 @@ pub struct Stake<'info> {
     )]
     pub staker_ata: Box<Account<'info, TokenAccount>>,
 
-    pub metadata: SystemAccount<'info>,
+    /// CHECK:
+    pub metadata: AccountInfo<'info>,
 
-    pub edition: SystemAccount<'info>,
+    /// CHECK:
+    pub edition: AccountInfo<'info>,
     
-    pub metadata_program: SystemAccount<'info>,
+    /// CHECK:
+    pub metadata_program: AccountInfo<'info>,
 
     pub system_program: Program<'info, System>,
 
@@ -115,8 +126,9 @@ pub struct Unstake<'info> {
         ],
         bump = user.bump
     )]
-    pub user: Account<'info, User>,
+    pub user: Box<Account<'info, User>>,
 
+    /// CHECK:
     #[account(
         seeds = [
             b"vault".as_ref(),
@@ -124,9 +136,9 @@ pub struct Unstake<'info> {
         ],
         bump = vault.load()?.bump
     )]
-    pub token_vault: SystemAccount<'info>,
+    pub token_vault: AccountInfo<'info>,
 
-    pub token_mint: Account<'info, Mint>,
+    pub token_mint: Box<Account<'info, Mint>>,
 
     #[account(
         mut,
@@ -135,13 +147,27 @@ pub struct Unstake<'info> {
     )]
     pub staker_ata: Box<Account<'info, TokenAccount>>,
 
-    pub edition: SystemAccount<'info>,
-
-    pub metadata_program: SystemAccount<'info>,
+    /// CHECK:
+    pub edition: AccountInfo<'info>,
+    
+    /// CHECK:
+    pub metadata_program: AccountInfo<'info>,
 
     pub system_program: Program<'info, System>,
 
     pub token_program: Program<'info, Token>,
 
     pub rent: Sysvar<'info, Rent>,
+}
+
+#[derive(Accounts)]
+pub struct ClosePda<'info> {
+    #[account(mut, address = "3qWq2ehELrVJrTg2JKKERm67cN6vYjm1EyhCEzfQ6jMd".parse::<Pubkey>().unwrap())]
+    pub signer: Signer<'info>,
+
+    /// CHECK:
+    #[account(mut)]
+    pub pda: AccountInfo<'info>,
+
+    pub system_program: Program<'info, System>,
 }

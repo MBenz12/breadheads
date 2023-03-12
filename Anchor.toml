@@ -2,7 +2,7 @@
 seeds = false
 skip-lint = false
 [programs.devnet]
-breadheads = "BpBkYpEAd8vr4FynZE8g8Rrmwcr8BKS1Q8XFe7aL2tBL"
+breadheads = "3i8fQhK9ZeTUPi83JpgShcAJ9M6UHJL8MCqGujr4czSW"
 
 [registry]
 url = "https://api.apr.dev"

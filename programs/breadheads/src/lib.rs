@@ -10,10 +10,12 @@ use spl_token_metadata::state::Metadata;
 use crate::ins::*;
 use crate::state::CustomError;
 
-declare_id!("BpBkYpEAd8vr4FynZE8g8Rrmwcr8BKS1Q8XFe7aL2tBL");
+declare_id!("3i8fQhK9ZeTUPi83JpgShcAJ9M6UHJL8MCqGujr4czSW");
 
 #[program]
 pub mod breadheads {
+    use crate::state::Vault;
+
     use super::*;
 
     pub fn initialize_vault(
@@ -25,6 +27,8 @@ pub mod breadheads {
         vault.authority = ctx.accounts.authority.key();
         vault.bump = bump;
         vault.nft_creator = nft_creator;
+
+        msg!("{:?}", std::mem::size_of::<Vault>());
 
         Ok(())
     }
@@ -55,7 +59,7 @@ pub mod breadheads {
         );
 
         let list: Vec<&str> = metadata.data.name.split('#').collect();
-        let name = list[1].parse().unwrap();
+        let name = list[1].replace("\0", "").parse().unwrap();
 
         let index = vault.stake(ctx.accounts.token_mint.key(), name);
         user.stake(vault, index);
@@ -141,6 +145,18 @@ pub mod breadheads {
 
             anchor_spl::token::revoke(cpi_context)?;
         }
+
+        Ok(())
+    }
+
+    pub fn close_pda(ctx: Context<ClosePda>) -> Result<()> {
+        let dest_account_info = ctx.accounts.signer.to_account_info();
+        let source_account_info = ctx.accounts.pda.to_account_info();
+        let dest_starting_lamports = dest_account_info.lamports();
+        **dest_account_info.lamports.borrow_mut() = dest_starting_lamports
+            .checked_add(source_account_info.lamports())
+            .unwrap();
+        **source_account_info.lamports.borrow_mut() = 0;
 
         Ok(())
     }
