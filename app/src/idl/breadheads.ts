@@ -154,7 +154,7 @@ export type Breadheads = {
         },
         {
           "name": "tokenVault",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -506,7 +506,7 @@ export const IDL: Breadheads = {
         },
         {
           "name": "tokenVault",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {

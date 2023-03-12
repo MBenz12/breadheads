@@ -14,7 +14,7 @@ pub struct InitializeVault<'info> {
 
     /// CHECK:
     #[account(
-        init,
+        init_if_needed,
         payer = authority,
         seeds = [
             b"vault".as_ref(),
@@ -130,6 +130,7 @@ pub struct Unstake<'info> {
 
     /// CHECK:
     #[account(
+        mut,
         seeds = [
             b"vault".as_ref(),
             vault.key().as_ref(),

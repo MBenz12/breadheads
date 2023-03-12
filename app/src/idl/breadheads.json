@@ -154,7 +154,7 @@
         },
         {
           "name": "tokenVault",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -349,6 +349,6 @@
     }
   ],
   "metadata": {
-    "address": "BpBkYpEAd8vr4FynZE8g8Rrmwcr8BKS1Q8XFe7aL2tBL"
+    "address": "GoN9gXY2UxvwgV9wf64SVzhVXrNfghqAhXPUpnvfYbap"
   }
 }

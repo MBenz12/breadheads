@@ -13,7 +13,7 @@ import {
     callInitializeVault,
     callReleaseUsers,
 } from "staking-program-lib/methods";
-import { getRole, getVaultPda } from "staking-program-lib/utils";
+import { getRole, getUserPda, getVaultPda } from "staking-program-lib/utils";
 import { User, VaultData } from "types";
 const programAddress = idl.metadata.address;
 const connection = new Connection(SOLANA_RPC_URL, "confirmed");
@@ -70,6 +70,24 @@ export default function Admin() {
             wallet,
             program,
             new PublicKey(creatorAddress),
+        );
+        if (txn) {
+            console.log(txn);
+            setVaultState(program);
+            toast.success("Success");
+        } else {
+            toast.error("Failed");
+        }
+    }
+
+    async function closeUser() {
+        if (!program || !wallet.publicKey) return;
+        const vault = await getVaultPda();
+        const [user] = await getUserPda(vault, wallet.publicKey);
+        const txn = await callClosePda(
+            wallet,
+            program,
+            user,
         );
         if (txn) {
             console.log(txn);
@@ -151,6 +169,9 @@ export default function Admin() {
                             }
 
                         </div>
+                        <button className="stake-button mt-2" onClick={closeUser}>
+                            Close User
+                        </button>
                         {vault && (
                             <>
                                 <div className="mt-5 w-1/2 h-1/2 flex flex-col items-center justify-center">
