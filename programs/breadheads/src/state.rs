@@ -12,7 +12,7 @@ pub struct Vault {
     pub authority: Pubkey,
     pub nft_items: [NftItem; TOTAL_COLLECTION],
     pub nft_creator: Pubkey,
-    pub item_count: usize,
+    pub item_count: u32,
     pub staked_count: u32,
     pub xp_rate: u32,
     pub badge_counts: [u8; 3],
@@ -39,28 +39,29 @@ impl Default for Vault {
 impl Vault {
     pub fn stake(&mut self, mint: Pubkey, name: u32) -> usize {
         let now: u64 = now();
-        for i in 0..self.item_count {
+        let item_count = self.item_count as usize;
+        for i in 0..item_count {
             if self.nft_items[i].mint == mint {
                 self.nft_items[i].last_staked_time = now;
                 self.staked_count = self.staked_count.checked_add(1).unwrap();
                 return i;
             }
         }
-        let i = self.item_count;
         self.item_count = self.item_count.checked_add(1).unwrap();
         self.staked_count = self.staked_count.checked_add(1).unwrap();
-        self.nft_items[i] = NftItem {
+        self.nft_items[item_count] = NftItem {
             mint,
             last_staked_time: now,
             staked_level: 0,
             name,
         };
-        i
+        item_count
     }
 
     pub fn unstake(&mut self, mint: Pubkey) -> usize {
         let now: u64 = now();
-        for i in 0..self.item_count {
+        let item_count = self.item_count as usize;
+        for i in 0..item_count {
             let mut item = self.nft_items[i];
             if item.mint == mint {
                 let staked_time = now.checked_sub(item.last_staked_time).unwrap();
@@ -71,7 +72,7 @@ impl Vault {
                 return i;
             }
         }
-        self.item_count
+        item_count
     }
 }
 
@@ -98,7 +99,7 @@ impl Default for NftItem {
 #[account]
 pub struct User {
     pub key: Pubkey,
-    pub staked_items: Vec<usize>,
+    pub staked_items: Vec<u32>,
     pub last_updated_time: u64,
     pub earned_xp: u32,
     pub bump: u8,
@@ -143,15 +144,15 @@ impl User {
     pub fn stake(&mut self, vault: &RefMut<Vault>, index: usize) {
         self.update(vault);
 
-        if self.staked_items.iter().any(|x| x == &index) == false {
-            self.staked_items.push(index);
+        if self.staked_items.iter().any(|&x| x == index as u32) == false {
+            self.staked_items.push(index as u32);
         }
     }
 
     pub fn unstake(&mut self, vault: &RefMut<Vault>, index: usize) {
         self.update(vault);
 
-        if self.staked_items.iter().any(|x| x == &index) {
+        if self.staked_items.iter().any(|&x| x == index as u32) {
             self.staked_items.remove(index);
         }
     }

@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk&display=swap');
+
+@font-face {
+  font-family: 'Moneta';
+  src: url('../public/fonts/Moneta-Regular.woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  line-height: 120%;
+}
+
+html {
+  background: linear-gradient(180deg, #000000 1.71%, rgba(7, 6, 61, 0.93) 47.1%, #000000 90.48%);
+  background-attachment: fixed;
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.main-window {
+  position: relative;
+  background: linear-gradient(236.7deg, #0E0E13 1.14%, #141315 121.53%);
+  border-left: 2px solid rgba(255, 255, 255, 0.08);
+  border-right: 2px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+  border-top: 8px solid #3D12B9;
+  border-radius: 20px;
+}
+
+.card {
+  position: relative;
+  background-color: #0E0E13;
+  border: none;
+  border-radius: 20px;
+}
+
+/*@media (max-width: 1024px) {*/
+/*  .card {*/
+/*    box-shadow: none;*/
+/*    background-color: transparent;*/
+/*  }*/
+/*}*/
+
+.menu-close-button {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.menu-close-button::before, .menu-close-button::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 2px;
+  background-color: #ffffff;
+}
+
+.menu-close-button::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.menu-close-button::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.bottom-grey-border {
+  border-bottom: 3px solid transparent;
+  border-image: linear-gradient(to right, rgba(24, 24, 24, 0.5) 0%, #484848 50%, rgba(24, 24, 24, 0.5) 100%) 0 0 1 0;
+}
+
+.inner-window {
+  border-top: 4px solid #484848;
+  border-bottom: 1px solid rgba(72, 72, 72, 0.3);
+  border-left: 1px solid rgba(72, 72, 72, 0.3);
+  border-right: 1px solid rgba(72, 72, 72, 0.3);
+}
+
+.purple-header-button-gradient {
+  background: linear-gradient(266.22deg, #2810BB -10.34%, #5B41FF 109.67%);
+}
+
+.purple-button-gradient {
+  background: linear-gradient(266.18deg, #2D00AE 3.93%, #8C5AF7 141.71%);
+}
+
+.zoom-in-animation {
+  animation: zoomIn 0.3s ease-in-out;
+}
+
+@keyframes zoomIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+::-webkit-scrollbar {
+  @apply h-2 w-0;
+}
+
+.stake-button {
+  @apply rounded-full h-10 w-44 bg-none hover:border-[#ffbe43] hover:text-[#ffbe43] text-center shadow-lg border;
+}
+
+.wallet-adapter-button-trigger {
+  background: transparent !important;
+  padding: 0 !important;
+  line-height: 100% !important;
+  height: inherit !important;
+  font-family: 'Space Grotesk' !important;
+  font-size: 15px !important;
+  font-weight: bold !important;
+}
+
+.wallet-adapter-button .wallet-adapter-button-start-icon {
+  display: none;
+}
