@@ -1,14 +1,14 @@
 [features]
 seeds = false
 skip-lint = false
-[programs.devnet]
-breadheads = "GoN9gXY2UxvwgV9wf64SVzhVXrNfghqAhXPUpnvfYbap"
+[programs.mainnet]
+breadheads = "3i8fQhK9ZeTUPi83JpgShcAJ9M6UHJL8MCqGujr4czSW"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "devnet"
+cluster = "mainnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

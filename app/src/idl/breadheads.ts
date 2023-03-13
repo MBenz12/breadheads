@@ -234,7 +234,7 @@ export type Breadheads = {
                 {
                   "defined": "NftItem"
                 },
-                5000
+                3000
               ]
             }
           },
@@ -586,7 +586,7 @@ export const IDL: Breadheads = {
                 {
                   "defined": "NftItem"
                 },
-                5000
+                3000
               ]
             }
           },
