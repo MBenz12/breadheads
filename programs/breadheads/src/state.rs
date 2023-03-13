@@ -4,7 +4,7 @@ use anchor_lang::prelude::*;
 
 use crate::util::now;
 
-pub const TOTAL_COLLECTION: usize = 5000;
+pub const TOTAL_COLLECTION: usize = 3000;
 pub const DECIMALS: u32 = 100;
 
 #[account(zero_copy)]
@@ -115,7 +115,7 @@ pub struct User {
 }
 
 impl User {
-    pub const LEN: usize = std::mem::size_of::<User>();
+    pub const LEN: usize = std::mem::size_of::<User>() + 200 * 4;
 
     pub fn init(&mut self, key: Pubkey, bump: u8) {
         self.key = key;
