@@ -3,7 +3,7 @@ import { PublicKey } from '@solana/web3.js';
 import { VAULT_NAME, VERIFIED_WALLETS } from 'config';
 import idl from 'idl/breadheads.json';
 
-export const VAULT_POOL_SIZE = 240112;
+export const VAULT_POOL_SIZE = 144112;
 
 export const getUserPda = async (
   vault: PublicKey,
