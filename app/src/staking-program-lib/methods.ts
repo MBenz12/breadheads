@@ -3,7 +3,7 @@ import { WalletContextState } from "@solana/wallet-adapter-react";
 import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { VAULT_NAME } from "config";
 import { Breadheads } from "idl/breadheads";
-import { getClosePdaInstruction, getCreateUserInstruction, getInitializeVaultInstruction, getStakeInstruction, getUnstakeInstruction } from "./instructions";
+import { getClosePdaInstruction, getCreateUserInstruction, getInitializeVaultInstruction, getStakeInstruction, getUnstakeInstruction, getUpdateVaultInstruction } from "./instructions";
 import { getVaultPda, VAULT_POOL_SIZE } from "./utils";
 
 export async function callCreateUser(
@@ -233,6 +233,36 @@ export async function callInitializeVault(
         program,
         wallet.publicKey,
         creatorAddress,
+      )
+    );
+    const txSignature = await wallet.sendTransaction(transaction, program.provider.connection, { skipPreflight: true });
+    await program.provider.connection.confirmTransaction(txSignature, "confirmed");
+    return txSignature;
+  } catch (error) {
+    console.log(error);
+    return;
+  }
+}
+
+export async function callUpdateVault(
+  wallet: WalletContextState,
+  program: Program<Breadheads>,
+  creatorAddress: PublicKey,
+  xpRate: number,
+  badgeCounts: Array<number>,
+  multipliers: Array<number>,
+) {
+  try {
+    if (!wallet.publicKey) return;
+    const transaction = new Transaction();
+    transaction.add(
+      await getUpdateVaultInstruction(
+        program,
+        wallet.publicKey,
+        creatorAddress,
+        xpRate,
+        badgeCounts,
+        multipliers,
       )
     );
     const txSignature = await wallet.sendTransaction(transaction, program.provider.connection, { skipPreflight: true });

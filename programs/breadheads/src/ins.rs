@@ -29,6 +29,15 @@ pub struct InitializeVault<'info> {
 }
 
 #[derive(Accounts)]
+pub struct UpdateVault<'info> {
+    #[account(mut, address = vault.load()?.authority)]
+    pub authority: Signer<'info>,
+
+    #[account(mut)]
+    pub vault: AccountLoader<'info, Vault>,
+}
+
+#[derive(Accounts)]
 pub struct CreateUser<'info> {
     #[account(mut)]
     pub authority: Signer<'info>,

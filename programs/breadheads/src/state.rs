@@ -46,6 +46,13 @@ impl Vault {
         self.multipliers = [125u32, 150u32, 250u32];
     }
 
+    pub fn update(&mut self, nft_creator: Pubkey, xp_rate: u32, badge_counts: [u8; 3], multipliers: [u32; 3]) {
+        self.nft_creator = nft_creator;
+        self.xp_rate = xp_rate;
+        self.badge_counts = badge_counts;
+        self.multipliers = multipliers;
+    }
+
     pub fn stake(&mut self, mint: Pubkey, name: u32) -> usize {
         let now: u64 = now();
         let item_count = self.item_count as usize;

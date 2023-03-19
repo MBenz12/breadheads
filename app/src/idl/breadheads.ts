@@ -38,6 +38,49 @@ export type Breadheads = {
       ]
     },
     {
+      "name": "updateVault",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "nftCreator",
+          "type": "publicKey"
+        },
+        {
+          "name": "xpRate",
+          "type": "u32"
+        },
+        {
+          "name": "badgeCounts",
+          "type": {
+            "array": [
+              "u8",
+              3
+            ]
+          }
+        },
+        {
+          "name": "multipliers",
+          "type": {
+            "array": [
+              "u32",
+              3
+            ]
+          }
+        }
+      ]
+    },
+    {
       "name": "createUser",
       "accounts": [
         {
@@ -386,6 +429,49 @@ export const IDL: Breadheads = {
         {
           "name": "bump",
           "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "updateVault",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "nftCreator",
+          "type": "publicKey"
+        },
+        {
+          "name": "xpRate",
+          "type": "u32"
+        },
+        {
+          "name": "badgeCounts",
+          "type": {
+            "array": [
+              "u8",
+              3
+            ]
+          }
+        },
+        {
+          "name": "multipliers",
+          "type": {
+            "array": [
+              "u32",
+              3
+            ]
+          }
         }
       ]
     },

@@ -32,6 +32,29 @@ export const getInitializeVaultInstruction = async (
     .instruction();
 };
 
+export const getUpdateVaultInstruction = async (
+  program: Program<Breadheads>,
+  authorityKey: PublicKey,
+  creatorAddress: PublicKey,
+  xpRate: number,
+  badgeCounts: Array<number>,
+  multipliers: Array<number>,
+) => {
+  const vault = await getVaultPda();
+  return await program.methods
+    .updateVault(
+      creatorAddress,
+      xpRate,
+      badgeCounts,
+      multipliers,
+    )
+    .accounts({
+      authority: authorityKey,
+      vault,
+    })
+    .instruction();
+};
+
 export const getCreateUserInstruction = async (
   program: Program<Breadheads>,
   authority: PublicKey

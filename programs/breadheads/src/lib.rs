@@ -31,6 +31,19 @@ pub mod breadheads {
         Ok(())
     }
 
+    pub fn update_vault(
+        ctx: Context<UpdateVault>,
+        nft_creator: Pubkey,
+        xp_rate: u32,
+        badge_counts: [u8; 3],
+        multipliers: [u32; 3],
+    ) -> Result<()> {
+        let vault = &mut ctx.accounts.vault.load_mut()?;
+        vault.update(nft_creator, xp_rate, badge_counts, multipliers);
+
+        Ok(())
+    }
+
     pub fn create_user(ctx: Context<CreateUser>) -> Result<()> {
         let user = &mut ctx.accounts.user;
         user.init(
