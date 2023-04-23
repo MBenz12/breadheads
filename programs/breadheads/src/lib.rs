@@ -31,6 +31,19 @@ pub mod breadheads {
         Ok(())
     }
 
+    pub fn update_vault(
+        ctx: Context<UpdateVault>,
+        nft_creator: Pubkey,
+        xp_rate: u32,
+        badge_counts: [u8; 3],
+        multipliers: [u32; 3],
+    ) -> Result<()> {
+        let vault = &mut ctx.accounts.vault.load_mut()?;
+        vault.update(nft_creator, xp_rate, badge_counts, multipliers);
+
+        Ok(())
+    }
+
     pub fn create_user(ctx: Context<CreateUser>) -> Result<()> {
         let user = &mut ctx.accounts.user;
         user.init(
@@ -59,8 +72,9 @@ pub mod breadheads {
         let list: Vec<&str> = metadata.data.name.split('#').collect();
         let name = list[1].replace("\0", "").parse().unwrap();
 
+        let is_one_one = util::is_one_one(ctx.accounts.token_mint.key());
         let index = vault.stake(ctx.accounts.token_mint.key(), name);
-        user.stake(vault, index);
+        user.stake(vault, index, is_one_one);
 
         let cpi_context = CpiContext::new(
             ctx.accounts.token_program.to_account_info(),
@@ -108,8 +122,9 @@ pub mod breadheads {
             CustomError::Unauthorized
         );
 
+        let is_one_one = util::is_one_one(ctx.accounts.token_mint.key());
         let index = vault.unstake(ctx.accounts.token_mint.key());
-        user.unstake(vault, index);
+        user.unstake(vault, index, is_one_one);
 
         let vault_key = ctx.accounts.vault.key();
         let bump = vault.bump;

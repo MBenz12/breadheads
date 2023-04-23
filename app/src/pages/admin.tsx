@@ -10,22 +10,33 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
     callClosePda,
+    callClosePdas,
     callInitializeVault,
     callReleaseUsers,
+    callUpdateVault,
 } from "staking-program-lib/methods";
 import { getRole, getUserPda, getVaultPda } from "staking-program-lib/utils";
 import { User, VaultData } from "types";
 const programAddress = idl.metadata.address;
 const connection = new Connection(SOLANA_RPC_URL, "confirmed");
+const levels = ["Dreamer", "Believer", "Acheiver"];
+const badges = [
+    "Bakers Dozen",
+    "Confectioner",
+    "Bread Winner",
+];
 
 export default function Admin() {
     const [program, setProgram] = useState<Program<Breadheads> | undefined>();
     const [vault, setVault] = useState<VaultData>();
-    const [creatorAddress, setCreatorAddress] = useState(NFT_CREATOR);
     const [totalStaked, setTotalStaked] = useState(0);
     const [role, setRole] = useState(0);
     const anchorWallet = useAnchorWallet();
     const wallet = useWallet();
+    const [creatorAddress, setCreatorAddress] = useState(NFT_CREATOR);
+    const [xpRate, setXpRate] = useState(5);
+    const [badgeCounts, setBadgeCounts] = useState([13, 26, 36]);
+    const [multipliers, setMultipliers] = useState([1.25, 1.5, 2.5]);
 
     useEffect(() => {
         if (!anchorWallet) return;
@@ -45,6 +56,9 @@ export default function Admin() {
             if (vaultData) {
                 setVault(vaultData);
                 setCreatorAddress(vaultData.nftCreator.toString());
+                setXpRate(vaultData.xpRate / 100);
+                setBadgeCounts(vaultData.badgeCounts);
+                setMultipliers(vaultData.multipliers.map(multiplier => multiplier / 100 / 256));
                 setTotalStaked(vaultData.stakedCount);
             } else {
                 setCreatorAddress(NFT_CREATOR);
@@ -80,6 +94,25 @@ export default function Admin() {
         }
     }
 
+    async function updateVault() {
+        if (!program || !wallet.publicKey) return;
+        const txn = await callUpdateVault(
+            wallet,
+            program,
+            new PublicKey(creatorAddress),
+            xpRate * 100,
+            badgeCounts,
+            multipliers.map(multiplier => multiplier * 100),
+        );
+        if (txn) {
+            console.log(txn);
+            setVaultState(program);
+            toast.success("Success");
+        } else {
+            toast.error("Failed");
+        }
+    }
+
     async function closeUser() {
         if (!program || !wallet.publicKey) return;
         const vault = await getVaultPda();
@@ -88,6 +121,23 @@ export default function Admin() {
             wallet,
             program,
             user,
+        );
+        if (txn) {
+            console.log(txn);
+            setVaultState(program);
+            toast.success("Success");
+        } else {
+            toast.error("Failed");
+        }
+    }
+
+    async function closeAllUsers() {
+        if (!program || !wallet.publicKey) return;
+        const users = await program.account.user.all();
+        const txn = await callClosePdas(
+            wallet,
+            program,
+            users.map(user => user.publicKey),
         );
         if (txn) {
             console.log(txn);
@@ -158,24 +208,72 @@ export default function Admin() {
                                     value={creatorAddress}
                                     onChange={(e) => setCreatorAddress(e.target.value)}
                                 />
+                                <label htmlFor="xpRate">XP Rate</label>
+                                <input
+                                    className="shadow appearance-none border rounded py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline"
+                                    type="text"
+                                    id="xpRate"
+                                    value={creatorAddress}
+                                    onChange={(e) => setXpRate(parseFloat(e.target.value) || 0)}
+                                />
+                                {badges.map((badge, index) => (
+                                    <div key={badge} className='flex gap-2 items-center'>
+                                        <label htmlFor={badge}>{badge}</label>
+                                        <input
+                                            className="shadow appearance-none border rounded py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline"
+                                            type="text"
+                                            id={badge}
+                                            value={badgeCounts[index]}
+                                            onChange={(e) => {
+                                                const newBadgeCounts = [...badgeCounts];
+                                                newBadgeCounts[index]  = parseInt(e.target.value);
+                                                setBadgeCounts(newBadgeCounts);
+                                            }}
+                                        />
+                                    </div>
+                                ))}
+                                {levels.map((level, index) => (
+                                    <div key={level} className='flex gap-2 items-center'>
+                                        <label htmlFor={level}>{level}</label>
+                                        <input
+                                            className="shadow appearance-none border rounded py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline"
+                                            type="text"
+                                            id={level}
+                                            value={multipliers[index]}
+                                            onChange={(e) => {
+                                                const newMultipliers = [...multipliers];
+                                                newMultipliers[index]  = parseFloat(e.target.value);
+                                                setMultipliers(newMultipliers);
+                                            }}
+                                        />
+                                    </div>
+                                ))}
                             </>}
                             {!vault ?
                                 <button className="stake-button mt-2" onClick={initializeVault}>
                                     Create Vault
                                 </button> :
-                                <button className="stake-button mt-2" onClick={closeVault}>
-                                    Close Vault
-                                </button>
+                                <>
+                                    <button className="stake-button mt-2" onClick={updateVault}>
+                                        Update Vault
+                                    </button>
+                                    <button className="stake-button mt-2" onClick={closeVault}>
+                                        Close Vault
+                                    </button>
+                                </>
                             }
 
                         </div>
                         <button className="stake-button mt-2" onClick={closeUser}>
-                            Close User
+                            Close My User
+                        </button>
+                        <button className="stake-button mt-2" onClick={closeAllUsers}>
+                            Close All Users
                         </button>
                         {vault && (
                             <>
                                 <div className="mt-5 w-1/2 h-1/2 flex flex-col items-center justify-center">
-                                    <button className="hidden stake-button mt-2 text-red" onClick={releaseAllUsers}>
+                                    <button className="stake-button mt-2 text-red" onClick={releaseAllUsers}>
                                         Release All Users
                                     </button>
                                 </div>

@@ -46,6 +46,13 @@ impl Vault {
         self.multipliers = [125u32, 150u32, 250u32];
     }
 
+    pub fn update(&mut self, nft_creator: Pubkey, xp_rate: u32, badge_counts: [u8; 3], multipliers: [u32; 3]) {
+        self.nft_creator = nft_creator;
+        self.xp_rate = xp_rate;
+        self.badge_counts = badge_counts;
+        self.multipliers = multipliers;
+    }
+
     pub fn stake(&mut self, mint: Pubkey, name: u32) -> usize {
         let now: u64 = now();
         let item_count = self.item_count as usize;
@@ -111,6 +118,7 @@ pub struct User {
     pub staked_items: Vec<u32>,
     pub last_updated_time: u64,
     pub earned_xp: u32,
+    pub one_one_count: u8,
     pub bump: u8,
 }
 
@@ -128,7 +136,7 @@ impl User {
     pub fn update(&mut self, vault: &RefMut<Vault>) {
         let now: u64 = now();
         if self.last_updated_time > 0 {
-            let staked_count = self.staked_items.len();
+            let staked_count = self.staked_items.len() + (self.one_one_count as usize) * 2;
             let mut multiplier = DECIMALS;
             for i in 0..vault.badge_counts.len() {
                 if vault.badge_counts[i] as usize <= staked_count {
@@ -147,20 +155,26 @@ impl User {
         self.last_updated_time = now;
     }
 
-    pub fn stake(&mut self, vault: &RefMut<Vault>, index: usize) {
+    pub fn stake(&mut self, vault: &RefMut<Vault>, index: usize, is_one_one: bool) {
         self.update(vault);
 
         if self.staked_items.iter().any(|&x| x == index as u32) == false {
             self.staked_items.push(index as u32);
+            if is_one_one {
+                self.one_one_count = self.one_one_count.checked_add(1).unwrap();
+            }
         }
     }
 
-    pub fn unstake(&mut self, vault: &RefMut<Vault>, index: usize) {
+    pub fn unstake(&mut self, vault: &RefMut<Vault>, index: usize, is_one_one: bool) {
         self.update(vault);
 
         let index = self.staked_items.iter().position(|&x| x == index as u32);
         if let Some(index) = index {
             self.staked_items.remove(index);
+            if is_one_one {
+                self.one_one_count = self.one_one_count.checked_sub(1).unwrap();
+            }
         }
     }
 }
