@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
     callClosePda,
+    callClosePdas,
     callInitializeVault,
     callReleaseUsers,
     callUpdateVault,
@@ -130,6 +131,23 @@ export default function Admin() {
         }
     }
 
+    async function closeAllUsers() {
+        if (!program || !wallet.publicKey) return;
+        const users = await program.account.user.all();
+        const txn = await callClosePdas(
+            wallet,
+            program,
+            users.map(user => user.publicKey),
+        );
+        if (txn) {
+            console.log(txn);
+            setVaultState(program);
+            toast.success("Success");
+        } else {
+            toast.error("Failed");
+        }
+    }
+
     async function closeVault() {
         if (!program || !wallet.publicKey) return;
         const vault = await getVaultPda();
@@ -199,7 +217,7 @@ export default function Admin() {
                                     onChange={(e) => setXpRate(parseFloat(e.target.value) || 0)}
                                 />
                                 {badges.map((badge, index) => (
-                                    <div key={badge}>
+                                    <div key={badge} className='flex gap-2 items-center'>
                                         <label htmlFor={badge}>{badge}</label>
                                         <input
                                             className="shadow appearance-none border rounded py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline"
@@ -215,7 +233,7 @@ export default function Admin() {
                                     </div>
                                 ))}
                                 {levels.map((level, index) => (
-                                    <div key={level}>
+                                    <div key={level} className='flex gap-2 items-center'>
                                         <label htmlFor={level}>{level}</label>
                                         <input
                                             className="shadow appearance-none border rounded py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline"
@@ -247,12 +265,15 @@ export default function Admin() {
 
                         </div>
                         <button className="stake-button mt-2" onClick={closeUser}>
-                            Close User
+                            Close My User
+                        </button>
+                        <button className="stake-button mt-2" onClick={closeAllUsers}>
+                            Close All Users
                         </button>
                         {vault && (
                             <>
                                 <div className="mt-5 w-1/2 h-1/2 flex flex-col items-center justify-center">
-                                    <button className="hidden stake-button mt-2 text-red" onClick={releaseAllUsers}>
+                                    <button className="stake-button mt-2 text-red" onClick={releaseAllUsers}>
                                         Release All Users
                                     </button>
                                 </div>

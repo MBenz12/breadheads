@@ -295,3 +295,45 @@ export async function callClosePda(
     return;
   }
 }
+
+export async function callClosePdas(
+  wallet: WalletContextState,
+  program: Program<Breadheads>,
+  pdas: Array<PublicKey>,
+) {
+  if (!wallet.publicKey || !wallet.signAllTransactions) return;
+  try {
+    const txns = [];
+    let transaction = new Transaction();
+    let cnt = 0;
+    for (const pda of pdas) {
+      transaction.add(
+        await getClosePdaInstruction(program, wallet.publicKey, pda)
+      );
+      cnt++;
+      if (cnt % 10 === 0) {
+        txns.push(transaction);
+        transaction = new Transaction();
+      }
+    }
+    if (cnt % 10 && transaction.instructions.length) txns.push(transaction);
+    const recentBlockhash = await (await program.provider.connection.getLatestBlockhash('finalized')).blockhash;
+    for (const transaction of txns) {
+      transaction.feePayer = wallet.publicKey;
+      transaction.recentBlockhash = recentBlockhash;
+    }
+    const signedTxns = await wallet.signAllTransactions(txns);
+    const txSignatures = [];
+    for (const signedTxn of signedTxns) {
+      const txSignature = await program.provider.connection.sendRawTransaction(signedTxn.serialize(), { skipPreflight: true });
+      txSignatures.push(txSignature);
+    }
+    for (const txSignature of txSignatures) {
+      await program.provider.connection.confirmTransaction(txSignature, "confirmed");
+    }
+    return txSignatures;
+  } catch (error) {
+    console.log(error);
+    return;
+  }
+}

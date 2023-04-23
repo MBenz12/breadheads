@@ -346,6 +346,10 @@
             "type": "u32"
           },
           {
+            "name": "oneOneCount",
+            "type": "u8"
+          },
+          {
             "name": "bump",
             "type": "u8"
           }

@@ -346,6 +346,10 @@ export type Breadheads = {
             "type": "u32"
           },
           {
+            "name": "oneOneCount",
+            "type": "u8"
+          },
+          {
             "name": "bump",
             "type": "u8"
           }
@@ -739,6 +743,10 @@ export const IDL: Breadheads = {
           {
             "name": "earnedXp",
             "type": "u32"
+          },
+          {
+            "name": "oneOneCount",
+            "type": "u8"
           },
           {
             "name": "bump",
