@@ -170,7 +170,12 @@ export type Breadheads = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "oneOneIndex",
+          "type": "u8"
+        }
+      ]
     },
     {
       "name": "unstake",
@@ -236,7 +241,12 @@ export type Breadheads = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "oneOneIndex",
+          "type": "u8"
+        }
+      ]
     },
     {
       "name": "closePda",
@@ -569,7 +579,12 @@ export const IDL: Breadheads = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "oneOneIndex",
+          "type": "u8"
+        }
+      ]
     },
     {
       "name": "unstake",
@@ -635,7 +650,12 @@ export const IDL: Breadheads = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "oneOneIndex",
+          "type": "u8"
+        }
+      ]
     },
     {
       "name": "closePda",

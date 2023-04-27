@@ -30,6 +30,6 @@ const ONE_ONES: [&str; 23] = [
     "HhsCdxppregUakAREv3EsJt3mG5mvZYXjRXwnrfP3NZ1"
 ];
 
-pub fn is_one_one(mint: Pubkey) -> bool {
-    ONE_ONES.iter().any(|&addr| addr.parse::<Pubkey>().unwrap() == mint)
+pub fn is_one_one(mint: Pubkey, one_one_index: u8) -> bool {
+    one_one_index < 23 && ONE_ONES[one_one_index as usize].parse::<Pubkey>().unwrap() == mint
 }

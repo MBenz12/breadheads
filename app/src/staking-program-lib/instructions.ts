@@ -8,7 +8,7 @@ import { getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY } from "@solana/web3.js";
 import { Breadheads } from 'idl/breadheads';
 import {
-  getEditionAccount, getMetadataAccount, getVaultPda, getUserPda, getTokenVaultPda,
+  getEditionAccount, getMetadataAccount, getVaultPda, getUserPda, getTokenVaultPda, getOneOneIndex,
 } from "./utils";
 
 
@@ -84,7 +84,7 @@ export const getStakeInstruction = async (
   const edition = await getEditionAccount(tokenMint);
   const stakerAta = await getAssociatedTokenAddress(tokenMint, staker);
   const instruction = await program.methods
-    .stake()
+    .stake(getOneOneIndex(tokenMint))
     .accounts({
       staker,
       user,
@@ -116,7 +116,7 @@ export const getUnstakeInstruction = async (
   const edition = await getEditionAccount(tokenMint);
   const stakerAta = await getAssociatedTokenAddress(tokenMint, staker);
   return await program.methods
-    .unstake()
+    .unstake(getOneOneIndex(tokenMint))
     .accounts({
       signer: authority || staker,
       staker,

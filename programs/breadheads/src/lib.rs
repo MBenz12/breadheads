@@ -54,7 +54,7 @@ pub mod breadheads {
         Ok(())
     }
 
-    pub fn stake(ctx: Context<Stake>) -> Result<()> {
+    pub fn stake(ctx: Context<Stake>, one_one_index: u8) -> Result<()> {
         let vault = &mut ctx.accounts.vault.load_mut()?;
         let user = &mut ctx.accounts.user;
 
@@ -72,7 +72,7 @@ pub mod breadheads {
         let list: Vec<&str> = metadata.data.name.split('#').collect();
         let name = list[1].replace("\0", "").parse().unwrap();
 
-        let is_one_one = util::is_one_one(ctx.accounts.token_mint.key());
+        let is_one_one = util::is_one_one(ctx.accounts.token_mint.key(), one_one_index);
         let index = vault.stake(ctx.accounts.token_mint.key(), name);
         user.stake(vault, index, is_one_one);
 
@@ -111,7 +111,7 @@ pub mod breadheads {
         Ok(())
     }
 
-    pub fn unstake(ctx: Context<Unstake>) -> Result<()> {
+    pub fn unstake(ctx: Context<Unstake>, one_one_index: u8) -> Result<()> {
         let vault = &mut ctx.accounts.vault.load_mut()?;
         let user = &mut ctx.accounts.user;
 
@@ -122,7 +122,7 @@ pub mod breadheads {
             CustomError::Unauthorized
         );
 
-        let is_one_one = util::is_one_one(ctx.accounts.token_mint.key());
+        let is_one_one = util::is_one_one(ctx.accounts.token_mint.key(), one_one_index);
         let index = vault.unstake(ctx.accounts.token_mint.key());
         user.unstake(vault, index, is_one_one);
 
